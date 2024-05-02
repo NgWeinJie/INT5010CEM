@@ -17,18 +17,17 @@ function validation() {
     const email = document.getElementById('user_email').value.trim();
 
     // Regular expression for email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isEmailValid = (email) => email.includes('@') && email.includes('.');
 
     // Error message
     const errorMessages = {
         user_email: 'Email must be valid.'
     };
 
-    // Function to validate the email field
-    function validateField(fieldId, regex, errorMessage) {
+    function validateField(fieldId, isValid, errorMessage) {
         const value = document.getElementById(fieldId).value.trim();
         const errorField = document.getElementById(fieldId + 'E');
-        if (!regex.test(value)) {
+        if (!isValid(value)) {
             errorField.textContent = errorMessage;
             errorField.classList.remove('d-none');
             return false;
@@ -40,9 +39,7 @@ function validation() {
     }
 
     // Check the email field for validation
-    const isValidEmail = validateField('user_email', emailRegex, errorMessages.user_email);
-
-    // Log validation status and error messages
+    const isValidEmail = validateField('user_email', isEmailValid, errorMessages.user_email);
 
     // Log error status and return true if the email field passes validation, otherwise false
     return isValidEmail;

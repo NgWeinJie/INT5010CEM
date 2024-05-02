@@ -18,7 +18,7 @@ function validation() {
     const password = document.getElementById('user_password').value.trim();
 
     // Regular expression for email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isEmailValid = (email) => email.includes('@') && email.includes('.');
 
     // Error messages
     const errorMessages = {
@@ -27,10 +27,10 @@ function validation() {
     };
 
     // Function to validate each field
-    function validateField(fieldId, regex, errorMessage) {
+    function validateField(fieldId, isValid, errorMessage) {
         const value = document.getElementById(fieldId).value.trim();
         const errorField = document.getElementById(fieldId + 'E');
-        if (!regex.test(value)) {
+        if (!isValid(value)) {
             errorField.textContent = errorMessage;
             errorField.classList.remove('d-none');
             return false;
@@ -42,10 +42,8 @@ function validation() {
     }
 
     // Check each field for validation
-    const isValidEmail = validateField('user_email', emailRegex, errorMessages.user_email);
-    const isValidPassword = validateField('user_password', /.+/, errorMessages.user_password);
-
-    // Log validation status and error messages for each field
+    const isValidEmail = validateField('user_email', isEmailValid, errorMessages.user_email);
+    const isValidPassword = validateField('user_password', (password) => !!password, errorMessages.user_password); // Validation for non-empty password
 
     // Log error status and return true if all fields pass validation, otherwise false
     const isValidForm = isValidEmail && isValidPassword;
@@ -58,8 +56,14 @@ function loginUser() {
 
     firebase.auth().signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
-            // Redirect to dashboard or home page after successful login
-            window.location.href = 'dashboard.html';
+            const user = userCredential.user;
+            // Check if the user's email is verified
+            if (user.emailVerified) {
+                // Redirect to home or home page after successful login
+                window.location.href = 'home.html';
+            } else {
+                alert('Please verify your email before logging in.');
+            }
         })
         .catch((error) => {
             alert('Failed to login: ' + error.message);
