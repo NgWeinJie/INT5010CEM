@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Terms & Conditions</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- Custom CSS -->
-    <link href="home.css" rel="stylesheet">
+    <link href="css/terms_conditions.css" rel="stylesheet">
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -62,15 +62,37 @@
         </div>
     </nav>
 
-    <div class="container mt-3">
-        <input type="text" id="searchInput" class="form-control" placeholder="Search products by name">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6">
+                    <img src="image/logo.png" class="logo img-fluid mb-4" alt="Shop Logo">
+                    <h1>Terms and Conditions</h1>
+                    
+                    <p>Welcome to Dry Foodies! These terms and conditions outline the rules and regulations for the use of our website.</p>
+            
+                    <h2>Cookies</h2>
+                    <p>We employ the use of cookies. By using Dry Foodies's website, you consent to the use of cookies in accordance with Dry Foodies's privacy policy.</p>
+                    <p>Cookies are small files that a website transfers to your computer's hard drive through your web browser (if you allow) that enables the site's or service provider's systems to recognize your browser and capture and remember certain information. We use cookies to understand and save your preferences for future visits and compile aggregate data about site traffic and site interaction so that we can offer better site experiences and tools in the future.</p>
+                    <p>We may use cookies to:</p>
+                    <ul>
+                        <li>Compile aggregate data about site traffic and site interactions in order to offer better site experiences and tools in the future.</li>
+                        <li>Remember your preferences for future visits.</li>
+                    </ul>
+                    <p>If you prefer, you can choose to have your computer warn you each time a cookie is being sent, or you can choose to turn off all cookies via your browser settings. Like most websites, if you turn your cookies off, some of our services may not function properly.</p>
+                    <p>By continuing to navigate our website without changing your cookie settings, you hereby acknowledge and agree to Dry Foodies's use of cookies as described above.</p>
+                    
+                    <h2>Reservation of Rights</h2>
+                    <p>We reserve the right at any time and in its sole discretion to request that you remove all links or any particular link to our website. You agree to immediately remove all links to our website upon such request.</p>
+            
+                    <h2>Contact Information</h2>
+                    <p>If you have any questions or concerns regarding these terms and conditions, please contact us, (+6012-345-6789).</p>
+                    
+                    <p>By using our website, you hereby consent to our terms and conditions and agree to its terms.</p>
+                
+            </div>
+        </div>
     </div>
 
-    <!-- Product Display Section -->
-    <div class="container mt-5">
-        <h2>Products</h2>
-        <div id="productList" class="row"></div>
-    </div>
 
     <!-- Footer -->
     <footer class="footer mt-5">
@@ -102,15 +124,18 @@
 
     <!-- Bootstrap JS (with jQuery) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <!-- Firestore -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <!-- Firebase Storage -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <!-- Firebase Authentication -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <!-- Include jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap JavaScript -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <!-- Custom JavaScript -->
-    <script src="home.js"></script>
 </body>
 </html>
