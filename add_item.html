@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Item</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="add_item.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Add New Item</h1>
+        <form id="addItemForm">
+
+            <div class="form-group">
+                <label for="itemName">Item Name</label>
+                <input type="text" class="form-control" id="itemName" name="itemName" required>
+            </div>
+            <div class="form-group">
+                <label for="itemPrice">Item Price</label>
+                <input type="text" class="form-control" id="itemPrice" name="itemPrice" required>
+            </div>
+            <div class="form-group">
+                <label for="itemStock">Item Stock</label>
+                <input type="number" class="form-control" id="itemStock" name="itemStock" required>
+            </div>
+            <div class="form-group">
+                <label for="itemImage">Item Image</label>
+                <input type="file" class="form-control-file" id="itemImage" name="itemImage" accept="image/*" required>
+            </div>
+            <div class="form-group">
+                <label for="itemCategories">Item Categories</label>
+                <select class="form-control" id="itemCategories" name="itemCategories" required>
+                    <option value="">Select Category</option>
+                    <option value="Biscuits & Cakes">Biscuits & Cakes</option>
+                    <option value="Canned Food">Canned Food</option>
+                    <option value="Cereals">Cereals</option>
+                    <option value="Snacks">Snacks</option>
+                    <option value="Commodities">Commodities</option>
+                    <option value="Jams, Spreads & Honey">Jams, Spreads & Honey</option>
+                    <option value="Pasta & Instant Food">Pasta & Instant Food</option>
+                    <option value="Sauce, Spice & Seasoning">Sauce, Spice & Seasoning</option>
+                    <option value="Sundry">Sundry</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="itemDetails">Item Details</label>
+                <textarea class="form-control" id="itemDetails" name="itemDetails" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Item</button>
+        </form>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JS (with jQuery) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Firebase JS SDK (version 8.10.0) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <!-- Your custom JavaScript -->
+    <script src="add_item.js"></script>
+</body>
+</html>

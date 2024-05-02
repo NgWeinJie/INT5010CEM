@@ -1,0 +1,71 @@
+
+/* Navbar */
+.navbar {
+    background-color: #343a40;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    color: white !important;
+}
+
+.nav-link:hover {
+    color: #f8f9fa !important;
+}
+
+/* Product Cards */
+.card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    transition: box-shadow 0.3s ease;
+    position: relative;
+}
+
+.card-body {
+    height: calc(100% - 38px); /* Adjust to accommodate button height */
+}
+
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.card-text {
+    font-size: 1rem;
+}
+
+.add-to-cart {
+    position: absolute;
+    bottom: 10px; 
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    background-color: #3cb815;
+}
+
+/* Product List */
+#productList {
+    margin-top: 2rem;
+}
+
+/* Footer */
+footer {
+    background-color: #343a40;
+    color: white;
+    text-align: center;
+    padding: 1rem 0;
+}
+
