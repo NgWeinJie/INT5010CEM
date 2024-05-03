@@ -96,5 +96,5 @@ const passwordField = document.getElementById('user_password');
 togglePasswordBtn.addEventListener('click', function() {
     const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
     passwordField.setAttribute('type', type);
-    this.classList.toggle('fa-eye-slash'); // Toggle the eye icon
+    this.classList.toggle('fa-eye-slash'); // Toggle the eye icon
 });
