@@ -1,3 +1,27 @@
+/* Add your custom styles for the profile page */
+
+/* Main container */
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+/* Profile details */
+h1, h2 {
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 50px;
+}
+
+/* User details */
+p {
+    margin-bottom: 20px;
+}
+
+/* Strong tags for labels */
+strong {
+    font-weight: bold;
+}
 
 /* Navbar */
 .navbar {
@@ -16,37 +40,6 @@
     color: #f8f9fa !important;
 }
 
-/* Product Cards */
-.card {
-    border: 1px solid #dee2e6;
-    border-radius: 0.25rem;
-    transition: box-shadow 0.3s ease;
-    position: relative;
-}
-
-.card-body {
-    height: calc(100% - 38px); /* Adjust to accommodate button height */
-}
-
-.card:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.card-img-top {
-    height: 200px;
-    object-fit: cover;
-}
-
-.card-title {
-    font-size: 1.25rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-}
-
-.card-text {
-    font-size: 1rem;
-}
-
 .add-to-cart {
     position: absolute;
     bottom: 10px; 
@@ -54,11 +47,6 @@
     transform: translateX(-50%);
     width: 90%;
     background-color: #3cb815;
-}
-
-/* Product List */
-#productList {
-    margin-top: 2rem;
 }
 
 /* Footer */
@@ -97,3 +85,7 @@ footer {
     margin-left: 5px; /* Adjust the spacing between text and link */
 }
 
+/* Adjusted margin for card */
+.card {
+    margin-top: 30px;
+}
