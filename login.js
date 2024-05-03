@@ -50,7 +50,6 @@ function validation() {
     return isValidForm;
 }
 
-
 function loginUser() {
     const email = document.getElementById('user_email').value;
     const password = document.getElementById('user_password').value;
@@ -60,9 +59,6 @@ function loginUser() {
             const user = userCredential.user;
             // Check if the user's email is verified
             if (user.emailVerified) {
-                // Save the email to localStorage
-                localStorage.setItem('loggedInUserEmail', email);
-                
                 // Redirect to home or home page after successful login
                 window.location.href = 'home.html';
             } else {
@@ -100,5 +96,5 @@ const passwordField = document.getElementById('user_password');
 togglePasswordBtn.addEventListener('click', function() {
     const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
     passwordField.setAttribute('type', type);
-    this.classList.toggle('fa-eye-slash'); // Toggle the eye icon
+    this.classList.toggle('fa-eye-slash'); // Toggle the eye icon
 });
