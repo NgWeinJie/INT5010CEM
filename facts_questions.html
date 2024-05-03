@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>FAQ</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- Custom CSS -->
-    <link href="home.css" rel="stylesheet">
+    <link href="css/facts_questions.css" rel="stylesheet">
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -62,14 +62,35 @@
         </div>
     </nav>
 
-    <div class="container mt-3">
-        <input type="text" id="searchInput" class="form-control" placeholder="Search products by name">
-    </div>
-
-    <!-- Product Display Section -->
-    <div class="container mt-5">
-        <h2>Products</h2>
-        <div id="productList" class="row"></div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6">
+                    <img src="image/logo.png" class="logo img-fluid mb-4" alt="Shop Logo">
+                    <h1>Frequently Asked Questions</h1>
+        
+                    <div class="faq-box">
+                        <div class="question" onclick="toggleAnswer(this)">What payment methods do you accept?</div>
+                        <div class="answer">
+                            We accept payments via credit/debit cards, PayPal, and other secure online payment methods.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-box">
+                        <div class="question" onclick="toggleAnswer(this)">What is your return policy?</div>
+                        <div class="answer">
+                            Our return policy allows you to return items within 30 days of purchase for a full refund or exchange.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-box">
+                        <div class="question" onclick="toggleAnswer(this)">How long does shipping take?</div>
+                        <div class="answer">
+                            Shipping times vary depending on your location. Typically, orders are delivered within 3-5 business days.
+                        </div>
+                    </div>
+                
+            </div>
+        </div>
     </div>
 
     <!-- Footer -->
@@ -102,12 +123,31 @@
 
     <!-- Bootstrap JS (with jQuery) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <!-- Firestore -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <!-- Firebase Storage -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-    <script src="home.js"></script>
+    <!-- Firebase Authentication -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <!-- Include jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap JavaScript -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        function toggleAnswer(question) {
+            // Hide all answers
+            var allAnswers = document.querySelectorAll('.answer');
+            allAnswers.forEach(function(answer) {
+                answer.classList.remove('show');
+            });
+
+            // Toggle the 'show' class on the next sibling element of the clicked question
+            question.nextElementSibling.classList.toggle('show');
+        }
+    </script>
+
 </body>
 </html>

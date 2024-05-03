@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>User Detail</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- Custom CSS -->
-    <link href="home.css" rel="stylesheet">
+    <link href="css/profile.css" rel="stylesheet">
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -62,15 +62,77 @@
         </div>
     </nav>
 
-    <div class="container mt-3">
-        <input type="text" id="searchInput" class="form-control" placeholder="Search products by name">
+    <!-- Main content -->
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white text-center">
+                        User Profile
+                    </div>
+                    <div class="card-body" id="userData">
+                        <h2 class="text-center">Welcome, <span id="userName"></span></h2>
+                        <p><strong>Email:</strong> <span id="userEmail"></span></p>
+                        <p><strong>Address:</strong> <span id="userAddress"></span></p>
+                        <p><strong>Phone Number:</strong> <span id="userPhone"></span></p>
+                        <p><strong>Postcode:</strong> <span id="userPostcode"></span></p>
+                        <p><strong>City:</strong> <span id="userCity"></span></p>
+                        <p><strong>State:</strong> <span id="userState"></span></p>
+                    </div>
+                    <div class="card-footer">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editProfileModal">Edit Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Product Display Section -->
-    <div class="container mt-5">
-        <h2>Products</h2>
-        <div id="productList" class="row"></div>
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editProfileModalLabel">Edit Profile Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="editProfileFormModal">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="text" class="form-control" id="emailModal" name="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <textarea class="form-control" id="addressModal" name="address" rows="2"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="text" class="form-control" id="phoneModal" name="phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="postcode">Postcode</label>
+                            <input type="text" class="form-control" id="postcodeModal" name="postcode">
+                        </div>
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" class="form-control" id="cityModal" name="city">
+                        </div>
+                        <div class="form-group">
+                            <label for="state">State</label>
+                            <input type="text" class="form-control" id="stateModal" name="state">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
+
 
     <!-- Footer -->
     <footer class="footer mt-5">
@@ -102,12 +164,19 @@
 
     <!-- Bootstrap JS (with jQuery) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <!-- Firestore -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <!-- Firebase Storage -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-    <script src="home.js"></script>
+    <!-- Firebase Authentication -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <!-- Include jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap JavaScript -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="js/profile.js"></script>
 </body>
 </html>
