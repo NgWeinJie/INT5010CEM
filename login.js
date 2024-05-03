@@ -50,6 +50,7 @@ function validation() {
     return isValidForm;
 }
 
+
 function loginUser() {
     const email = document.getElementById('user_email').value;
     const password = document.getElementById('user_password').value;
@@ -59,6 +60,9 @@ function loginUser() {
             const user = userCredential.user;
             // Check if the user's email is verified
             if (user.emailVerified) {
+                // Save the email to localStorage
+                localStorage.setItem('loggedInUserEmail', email);
+                
                 // Redirect to home or home page after successful login
                 window.location.href = 'home.html';
             } else {
