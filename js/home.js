@@ -38,8 +38,6 @@ async function fetchAndDisplayProductsByCategory() {
 
     // Iterate through each item category
     for (const category of itemCategories) {
-
-
         // Create a heading for the category
         const categoryHeading = document.createElement('h3');
         categoryHeading.id = category.replace(/\s+/g, '');
@@ -61,8 +59,9 @@ async function fetchAndDisplayProductsByCategory() {
             if (!querySnapshot.empty) {
                 querySnapshot.forEach((doc) => {
                     const product = doc.data();
-                    // Create and append product card here
-                    const productCard = createProductCard(product);
+                    const productId = doc.id; // Use the document ID as product ID
+                    console.log("Firestore Product ID:", productId);
+                    const productCard = createProductCard(product, productId); // Pass the document ID here
                     categoryProductsContainer.appendChild(productCard);
                 });
             } else {
@@ -81,9 +80,11 @@ async function fetchAndDisplayProductsByCategory() {
     }
 }
 
-function createProductCard(product) {
+function createProductCard(product, productId) {
     const productCard = document.createElement('div');
     productCard.classList.add('col-md-3', 'mb-4');
+
+    productCard.dataset.productId = productId;
 
     const card = document.createElement('div');
     card.classList.add('card');
@@ -114,7 +115,9 @@ function createProductCard(product) {
     addToCartButton.classList.add('btn', 'btn-primary', 'add-to-cart');
     addToCartButton.textContent = 'Add to Cart';
 
-    addToCartButton.addEventListener('click', function() {
+    // Add click event listener to "Add to Cart" button
+    addToCartButton.addEventListener('click', function(event) {
+        event.stopPropagation(); // Stop the event from propagating further
         console.log('Item added to cart:', product.itemName);
     });
 
@@ -131,6 +134,7 @@ function createProductCard(product) {
     return productCard;
 }
 
+
 // Add event listener to dropdown items
 document.querySelectorAll('.dropdown-item').forEach(item => {
     item.addEventListener('click', scrollToCategory);
@@ -138,7 +142,6 @@ document.querySelectorAll('.dropdown-item').forEach(item => {
 
 // Function to scroll to category
 function scrollToCategory(event) {
-    console.log('Dropdown item clicked.'); // Debug log
     event.preventDefault(); // Prevent default anchor behavior
 
     // Get the target section ID from the href attribute
@@ -155,42 +158,67 @@ function scrollToCategory(event) {
     }
 }
 
-
 // Call the function to fetch and display products by category when the page loads
 document.addEventListener('DOMContentLoaded', fetchAndDisplayProductsByCategory);
 
-
-
 function filterProductsByName(searchTerm) {
     const productList = document.getElementById('productList');
-    const categoryProductsContainers = productList.getElementsByClassName('row mb-4');
+    const categoryHeadings = productList.querySelectorAll('h3');
+
+    if (searchTerm.trim() !== '') {
+        // If search term is not empty, remove all category headings
+        categoryHeadings.forEach(heading => heading.remove());
+    } else {
+        // If search term is empty, reinstate category headings
+        const firstCategoryContainer = productList.querySelector('.row.mb-4');
+        const firstCategoryHeading = firstCategoryContainer.previousElementSibling;
+
+        // Check if there is at least one category container
+        if (firstCategoryHeading && firstCategoryHeading.tagName.toLowerCase() === 'h3') {
+            // Ensure there is only one category heading for each category
+            if (!productList.contains(firstCategoryHeading)) {
+                firstCategoryContainer.insertAdjacentElement('beforebegin', firstCategoryHeading);
+            }
+        }
+    }
 
     // Iterate through each category's products
+    const categoryProductsContainers = productList.getElementsByClassName('row mb-4');
     for (const container of categoryProductsContainers) {
         const products = container.getElementsByClassName('col-md-3 mb-4');
         // Iterate through each product in the category
         for (const product of products) {
-            // Check if the product card contains a category heading
             const isCategoryHeading = product.tagName.toLowerCase() === 'h3';
             if (isCategoryHeading) {
-                // Skip category headings
                 continue;
             }
+
             const productName = product.querySelector('.card-title').textContent.toLowerCase();
-            // Check if the product name includes the search term
-            if (productName.includes(searchTerm.toLowerCase())) {
-                // Show the product card
-                product.style.display = 'block';
-            } else {
-                // Hide the product card if it doesn't match the search term
-                product.style.display = 'none';
-            }
+            const isVisible = productName.includes(searchTerm.toLowerCase());
+            product.style.display = isVisible ? 'block' : 'none'; // Show or hide the product card based on visibility
         }
     }
 }
+
+
+
 
 // Event listener for the search input
 document.getElementById('searchInput').addEventListener('input', function(event) {
     const searchTerm = event.target.value.trim();
     filterProductsByName(searchTerm);
+});
+
+// Event delegation for handling clicks on product cards
+document.getElementById('productList').addEventListener('click', function(event) {
+    let clickedElement = event.target;
+    // Find the closest ancestor element with the data-product-id attribute
+    const productCard = clickedElement.closest('[data-product-id]');
+    if (productCard) {
+        const productId = productCard.dataset.productId;
+        console.log("Clicked Product ID:", productId);
+        window.location.href = `product_details.html#${productId}`;
+    } else {
+        console.log("Clicked element is not a product card."); 
+    }
 });
