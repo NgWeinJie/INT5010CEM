@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Payment</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- Custom CSS -->
-    <link href="css/home.css" rel="stylesheet">
+    <link href="css/payment.css" rel="stylesheet">
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -62,14 +62,19 @@
         </div>
     </nav>
 
-    <div class="container mt-3">
-        <input type="text" id="searchInput" class="form-control" placeholder="Search products by name">
-    </div>
-
-    <!-- Product Display Section -->
-    <div class="container mt-5">
-        <h2>Products</h2>
-        <div id="productList" class="row"></div>
+    <div class="container mt-5 payment-container">
+        <div class="row">
+            <div class="col-md-8">
+                <h1>Payment</h1>
+                <div id="paymentItems" class="mt-3"></div>
+                <h3 id="totalAmount" class="mt-3"></h3>
+                <button id="backToCartBtn" class="btn btn-secondary mt-3">Back to Cart</button>
+                <button id="doneBtn" class="btn btn-success mt-3 ml-3">Done</button> 
+            </div>
+            <div class="col-md-4 d-flex align-items-center justify-content-center qr-payment-container">
+                <img src="image/qr_payment.jpg" class="logo img-fluid" alt="QR Payment">
+            </div>
+        </div>
     </div>
 
     <!-- Footer -->
@@ -114,6 +119,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!-- Bootstrap JavaScript -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="js/home.js"></script>
+    <script src="js/payment.js"></script>
+
 </body>
 </html>

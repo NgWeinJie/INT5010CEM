@@ -18,6 +18,9 @@ const storage = firebase.storage();
 // Get a reference to Firestore database
 const db = firebase.firestore();
 
+// Get a reference to the auth service
+const auth = firebase.auth();
+
 async function fetchAndDisplayProductsByCategory() {
     const productList = document.getElementById('productList');
 
@@ -119,6 +122,31 @@ function createProductCard(product, productId) {
     addToCartButton.addEventListener('click', function(event) {
         event.stopPropagation(); // Stop the event from propagating further
         console.log('Item added to cart:', product.itemName);
+
+        // Retrieve product information
+        const productName = product.itemName;
+        const productPrice = parseFloat(product.itemPrice);
+        const productStock = parseInt(product.itemStock);
+
+        // Get the current user's ID
+        const userId = firebase.auth().currentUser.uid;
+
+        // Save product information to Firestore collection 'cart'
+        db.collection('cart').add({
+            userId: userId,
+            productName: productName,
+            productPrice: productPrice,
+            productStock: productStock,
+            productQuantity: 1
+        })
+        .then(function(docRef) {
+            console.log('Product added to cart:', docRef.id);
+            alert('Product added to cart!');
+        })
+        .catch(function(error) {
+            console.error('Error adding product to cart:', error);
+            alert('Failed to add product to cart. Please try again later.');
+        });
     });
 
     cardBody.appendChild(title);
@@ -219,6 +247,6 @@ document.getElementById('productList').addEventListener('click', function(event)
         console.log("Clicked Product ID:", productId);
         window.location.href = `product_details.html#${productId}`;
     } else {
-        console.log("Clicked element is not a product card."); 
-    }
+        console.log("Clicked element is not a product card."); 
+    }
 });
