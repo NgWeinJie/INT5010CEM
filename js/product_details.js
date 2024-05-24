@@ -14,8 +14,6 @@ const db = firebase.firestore();
 
 // Get the product ID from the URL
 const productId = window.location.hash.substring(1);
-console.log("Hash:", window.location.hash);
-console.log("Product ID:", productId);
 
 // Get references to HTML elements
 const productNameElement = document.getElementById('productName');
