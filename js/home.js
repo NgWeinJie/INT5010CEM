@@ -62,8 +62,7 @@ async function fetchAndDisplayProductsByCategory() {
             if (!querySnapshot.empty) {
                 querySnapshot.forEach((doc) => {
                     const product = doc.data();
-                    const productId = doc.id; // Use the document ID as product ID
-                    console.log("Firestore Product ID:", productId);
+                    const productId =doc. id; // Use the document ID as product ID
                     const productCard = createProductCard(product, productId); // Pass the document ID here
                     categoryProductsContainer.appendChild(productCard);
                 });
