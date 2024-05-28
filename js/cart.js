@@ -44,6 +44,7 @@ function fetchCartItems(currentUser) {
         tableHeader.innerHTML = `
             <tr>
                 <th>No</th>
+                <th>Image</th>
                 <th>Name</th>
                 <th>Price</th>
                 <th>Quantity</th>
@@ -73,6 +74,16 @@ function fetchCartItems(currentUser) {
                     const numberCell = document.createElement('td');
                     numberCell.textContent = counter++;
                     row.appendChild(numberCell);
+
+                    // Add image column
+                    const imageCell = document.createElement('td');
+                    const image = document.createElement('img');
+                    image.src = cartItem.productImageURL;
+                    image.alt = cartItem.productName;
+                    image.style.width = '120px';
+                    image.style.height = '120px';
+                    imageCell.appendChild(image);
+                    row.appendChild(imageCell);
 
                     // Add name column
                     const nameCell = document.createElement('td');
@@ -181,14 +192,22 @@ function fetchCartItems(currentUser) {
                 // Add event listener to the "Proceed to Payment" button
                 const proceedToPaymentBtn = document.getElementById('proceedToPaymentBtn');
                 proceedToPaymentBtn.addEventListener('click', function() {
-                    // Save cart items to the "payment" collection
-                    saveCartToPayment(currentUser).then(() => {
-                        // Redirect to payment.html
+                    const promoCode = document.getElementById('promoCode').value;
+                    // Check if promo code is valid
+                    if (promoCode === 'tdy1200') {
+                        // Apply discount of RM5.00
+                        const discount = 5.00;
+                        // Get the total price
+                        const totalPriceElement = document.getElementById('totalPrice');
+                        const totalPrice = parseFloat(totalPriceElement.textContent.replace('RM ', ''));
+                        // Calculate new total after discount
+                        const newTotal = totalPrice - discount;
+                        // Redirect to payment page and pass discount
+                        window.location.href = `payment.html?discount=${discount}&total=${newTotal}`;
+                    } else {
+                        // Redirect to payment page without discount
                         window.location.href = 'payment.html';
-                    }).catch((error) => {
-                        console.error('Error saving cart items to payment collection:', error);
-                        alert('Failed to proceed to payment. Please try again later.');
-                    });
+                    }
                 });
             })
             .catch((error) => {
@@ -233,8 +252,8 @@ function updateTotalPrice() {
     // Loop through each row
     rows.forEach(row => {
         // Get the product price and quantity from the row
-        const productPrice = parseFloat(row.querySelector('td:nth-child(3)').textContent.replace('RM ', ''));
-        const quantity = parseInt(row.querySelector('td:nth-child(4) input').value);
+        const productPrice = parseFloat(row.querySelector('td:nth-child(4)').textContent.replace('RM ', ''));
+        const quantity = parseInt(row.querySelector('td:nth-child(5) input').value);
 
         // Update total price based on product price and quantity
         totalPrice += productPrice * quantity;

@@ -15,6 +15,12 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
+    width: 820px;
+}
+
+#userDetailsForm .form-control {
+    width: 750px; /* Adjust the width as needed */
+    max-width: 100%; /* Ensure it does not exceed the container's width */
 }
 
 .qr-payment-container {
@@ -29,9 +35,13 @@ h1 {
 }
 
 h2 {
-    text-align: center;
+    text-align: left;
     margin-top: 40px;
     margin-bottom: 50px;
+}
+
+.payment-section h5 {
+    color: #007bff; /* Bootstrap 'btn-primary' color - color: #28a745;*/
 }
 
 /* User details */

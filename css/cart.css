@@ -65,6 +65,11 @@ strong {
     margin-bottom: 30px;
 }
 
+#promoCode {
+    max-width: 200px;
+    display: inline-block;
+}
+
 /* Total Price */
 #totalPriceContainer {
     text-align: right; /* Align the total price to the right */
