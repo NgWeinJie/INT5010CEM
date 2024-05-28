@@ -126,6 +126,7 @@ function createProductCard(product, productId) {
         const productName = product.itemName;
         const productPrice = parseFloat(product.itemPrice);
         const productStock = parseInt(product.itemStock);
+        const productImageURL = product.itemImageURL;
 
         // Get the current user's ID
         const userId = firebase.auth().currentUser.uid;
@@ -136,7 +137,8 @@ function createProductCard(product, productId) {
             productName: productName,
             productPrice: productPrice,
             productStock: productStock,
-            productQuantity: 1
+            productQuantity: 1,
+            productImageURL: productImageURL
         })
         .then(function(docRef) {
             console.log('Product added to cart:', docRef.id);
