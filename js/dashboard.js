@@ -15,6 +15,7 @@ firebase.initializeApp(firebaseConfig);
 
 // Get a reference to Firestore database
 const db = firebase.firestore();
+const storage = firebase.storage();
 
 // Function to fetch product data from Firestore
 function fetchProducts() {
@@ -79,6 +80,11 @@ function openEditModal(productId) {
                 const modalBody = `
                     <form id="editProductForm">
                         <div class="form-group">
+                            <label for="editItemImage">Image</label>
+                            <input type="file" class="form-control-file" id="editItemImage">
+                            <img src="${product.itemImageURL}" alt="${product.itemName}" id="currentItemImage" class="mt-2" style="max-width: 100px;">
+                        </div>
+                        <div class="form-group">
                             <label for="editItemName">Name</label>
                             <input type="text" class="form-control" id="editItemName" value="${product.itemName}" required>
                         </div>
@@ -114,61 +120,80 @@ function openEditModal(productId) {
                         itemCategories: document.getElementById('editItemCategories').value,
                         itemDetails: document.getElementById('editItemDetails').value
                     };
-                    updateProduct(productId, updatedDetails);
+
+                    // Check if a new image is uploaded
+                    const imageFile = document.getElementById('editItemImage').files[0];
+                    if (imageFile) {
+                        // Upload new image to Firebase Storage
+                        const storageRef = storage.ref('product_images/' + imageFile.name);
+                        storageRef.put(imageFile).then(snapshot => {
+                            snapshot.ref.getDownloadURL().then(downloadURL => {
+                                updatedDetails.itemImageURL = downloadURL;
+                                // Update Firestore document with new image URL
+                                db.collection('products').doc(productId).update(updatedDetails)
+                                    .then(() => {
+                                        $('#editProductModal').modal('hide');
+                                        fetchProducts();
+                                    })
+                                    .catch(error => {
+                                        console.error('Error updating product:', error);
+                                    });
+                            });
+                        }).catch(error => {
+                            console.error('Error uploading image:', error);
+                        });
+                    } else {
+                        // Update Firestore document without new image URL
+                        db.collection('products').doc(productId).update(updatedDetails)
+                            .then(() => {
+                                $('#editProductModal').modal('hide');
+                                fetchProducts();
+                            })
+                            .catch(error => {
+                                console.error('Error updating product:', error);
+                            });
+                    }
                 });
             } else {
-                console.error('No such product');
+                console.error('No such document!');
             }
         })
         .catch(error => {
-            console.error('Error getting product details:', error);
+            console.error('Error getting document:', error);
         });
 
-    $('#editProductModal').modal('show'); // Show the modal
+    // Show the modal
+    $('#editProductModal').modal('show');
 }
 
-// Function to update product details
-function updateProduct(productId, updatedDetails) {
-    db.collection('products').doc(productId).update(updatedDetails)
-        .then(() => {
-            $('#editProductModal').modal('hide'); // Hide the modal after successful update
-            fetchProducts(); // Refresh the product list
-            alert('Product updated successfully!');
-        })
-        .catch(error => {
-            console.error('Error updating product:', error);
-            alert('Failed to update product. Please try again later.');
-        });
-}
-
-// Function to delete product
+// Function to delete a product
 function deleteProduct(productId) {
     if (confirm('Are you sure you want to delete this product?')) {
         db.collection('products').doc(productId).delete()
             .then(() => {
-                document.getElementById(productId).remove();
-                alert('Product deleted successfully!');
+                console.log('Product successfully deleted!');
+                fetchProducts();
             })
             .catch(error => {
-                console.error('Error deleting product:', error);
-                alert('Failed to delete product. Please try again later.');
+                console.error('Error removing product:', error);
             });
     }
 }
 
+// Function to search products by name
 function searchProduct() {
     const searchInput = document.getElementById('searchInput').value.toLowerCase();
-    const productList = document.getElementById('productList');
-    const productItems = productList.querySelectorAll('.product-item');
-    
+    const productItems = document.querySelectorAll('.product-item');
+
     productItems.forEach(item => {
         const productName = item.querySelector('.product-name').textContent.toLowerCase();
         if (productName.includes(searchInput)) {
-            item.style.display = ''; // Show the item if it matches the search query
+            item.style.display = '';
         } else {
-            item.style.display = 'none'; // Hide the item if it doesn't match the search query
+            item.style.display = 'none';
         }
     });
 }
 
-
+// Initial fetch of products
+fetchProducts();

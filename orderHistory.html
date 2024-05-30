@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - Dry Foodies</title>
-    <!-- Bootstrap CSS -->
+    <title>Order History</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- Custom CSS -->
-    <link href="css/about_us.css" rel="stylesheet">
+    <link href="css/orderHistory.css" rel="stylesheet">
+    <link href="css/home.css" rel="stylesheet">
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -61,29 +61,9 @@
             </ul>
         </div>
     </nav>
-
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-6">
-                <img src="image/logo.png" class="logo img-fluid mb-4" alt="Store Image">
-                <h1>About Us</h1>
-                <p>Welcome to Dry Foodies - Your one-stop shop for quality dry foods!</p>
-                <h2>Who We Are</h2>
-                <p>At Dry Foodies, we specialize in providing a wide range of high-quality dry food items. Our mission is to bring you the best selection of dry foods, ensuring that you always have access to healthy, delicious, and convenient options.</p>
-                <h3>Our Categories</h3>
-                <ul>
-                    <li>Biscuits & Cakes</li>
-                    <li>Canned Food</li>
-                    <li>Cereals</li>
-                    <li>Snacks</li>
-                    <li>Commodities</li>
-                    <li>Jams, Spreads & Honey</li>
-                    <li>Pasta & Instant Food</li>
-                    <li>Sauce, Spice & Seasoning</li>
-                    <li>Sundry</li>
-                </ul>
-            </div>
-        </div>
+    <div class="container mt-5">
+        <h2 class="text-center">Order History</h2>
+        <div id="orderHistory" class="mt-4"></div>
     </div>
 
     <!-- Footer -->
@@ -95,6 +75,7 @@
                     <p>Don't understand or have any problems, click<span class="footer-link"><a href="facts_questions.html">HERE</a></span></p>
                     <h5>Terms & Conditions</h5>
                     <p>Review the terms & conditions, click<span class="footer-link"><a href="terms_conditions.html">HERE</a></span></p>
+
                 </div>
                 <div class="col-md-4">
                     <h5>Contact Us</h5>
@@ -113,9 +94,17 @@
         </div>
     </footer>
 
-    <!-- Bootstrap JS (with jQuery) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <!-- Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <!-- Firebase Storage -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <!-- Firebase Authentication -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
+    <!-- Custom JavaScript -->
+    <script src="js/orderHistory.js"></script>
+    <script src="js/header.js"></script>
 </body>
 </html>
