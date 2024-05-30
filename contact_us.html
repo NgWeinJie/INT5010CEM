@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Detail</title>
+    <title>Contact Us - Dry Foodies</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- Custom CSS -->
-    <link href="css/profile.css" rel="stylesheet">
+    <link href="css/contact_us.css" rel="stylesheet">
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -62,77 +62,31 @@
         </div>
     </nav>
 
-    <!-- Main content -->
-    <div class="container mt-4">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header bg-primary text-white text-center">
-                        User Profile
+    <!-- Contact Us Form -->
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <h2>Contact Us</h2>
+                <form id="contactForm">
+                    <h6>If you have any questions or problems, feel free to speak up. We always hear our customers inquiries.</h6>
+                    <br>
+                    <div class="form-group">
+                        <label for="userName">Name</label>
+                        <input type="text" class="form-control" id="userName" placeholder="Your Name" required>
                     </div>
-                    <div class="card-body" id="userData">
-                        <h2 class="text-center">Welcome, <span id="userName"></span></h2>
-                        <p><strong>Email:</strong> <span id="userEmail"></span></p>
-                        <p><strong>Address:</strong> <span id="userAddress"></span></p>
-                        <p><strong>Phone Number:</strong> <span id="userPhone"></span></p>
-                        <p><strong>Postcode:</strong> <span id="userPostcode"></span></p>
-                        <p><strong>City:</strong> <span id="userCity"></span></p>
-                        <p><strong>State:</strong> <span id="userState"></span></p>
+                    <div class="form-group">
+                        <label for="userEmail">Email</label>
+                        <input type="email" class="form-control" id="userEmail" placeholder="Your Email" required>
                     </div>
-                    <div class="card-footer">
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editProfileModal">Edit Details</button>
+                    <div class="form-group">
+                        <label for="userMessage">Message</label>
+                        <textarea class="form-control" id="userMessage" rows="6" placeholder="Your Message" required></textarea>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit Profile Modal -->
-    <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editProfileModalLabel">Edit Profile Details</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <form id="editProfileFormModal">
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="text" class="form-control" id="emailModal" name="email">
-                        </div>
-                        <div class="form-group">
-                            <label for="address">Address</label>
-                            <textarea class="form-control" id="addressModal" name="address" rows="2"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">Phone Number</label>
-                            <input type="text" class="form-control" id="phoneModal" name="phone">
-                        </div>
-                        <div class="form-group">
-                            <label for="postcode">Postcode</label>
-                            <input type="text" class="form-control" id="postcodeModal" name="postcode">
-                        </div>
-                        <div class="form-group">
-                            <label for="city">City</label>
-                            <input type="text" class="form-control" id="cityModal" name="city">
-                        </div>
-                        <div class="form-group">
-                            <label for="state">State</label>
-                            <input type="text" class="form-control" id="stateModal" name="state">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                    </div>
+                    <button type="submit" class="btn btn-success">Send Message</button>
                 </form>
             </div>
         </div>
     </div>
-
 
     <!-- Footer -->
     <footer class="footer mt-5">
@@ -143,7 +97,6 @@
                     <p>Don't understand or have any problems, click<span class="footer-link"><a href="facts_questions.html">HERE</a></span></p>
                     <h5>Terms & Conditions</h5>
                     <p>Review the terms & conditions, click<span class="footer-link"><a href="terms_conditions.html">HERE</a></span></p>
-
                 </div>
                 <div class="col-md-4">
                     <h5>Contact Us</h5>
@@ -176,7 +129,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!-- Bootstrap JavaScript -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <!-- Custom JavaScript -->
-    <script src="js/profile.js"></script>
+    <script src="js/contact_us.js"></script>
+
 </body>
 </html>
