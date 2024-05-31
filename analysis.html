@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Analysis</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -39,37 +39,27 @@
             </div>
         </nav>
     </header>
+
     <div class="container mt-5">
-        <h1>Admin Dashboard</h1>
-        <div class="input-group mt-3">
-            <input type="text" id="searchInput" class="form-control" placeholder="Search by product name">
-            <div class="input-group-append">
-                <button class="btn btn-primary" type="button" onclick="searchProduct()">Search</button>
-            </div>
-        </div>
-        <table class="table mt-3">
+        <h1>Product Purchase Analysis</h1>
+        <br>
+        <canvas id="productChart" width="400" height="200"></canvas>
+        <br>
+        <h2>Monthly Revenue</h2>
+        <br>
+        <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Stock</th>
-                    <th>Categories</th>
-                    <th>Details</th>
-                    <th>Action</th>
+                    <th>Month</th>
+                    <th>Revenue (RM)</th>
                 </tr>
             </thead>
-            <tbody id="productList">
-                <!-- Product items will be dynamically added here -->
+            <tbody id="revenueTableBody">
+                <!-- Monthly revenue will be inserted here -->
             </tbody>
         </table>
     </div>
-
-    <!-- Edit Product Modal -->
-    <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
-        <!-- Modal content will be dynamically added here -->
-    </div>
-
+    
     <!-- Bootstrap JS (with jQuery) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -78,7 +68,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <!-- Firebase Storage -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-    <script src="js/dashboard.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/analysis.js"></script>
     <script src="js/admin_header.js"></script>
 </body>
 </html>
