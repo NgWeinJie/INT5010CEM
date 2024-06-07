@@ -251,3 +251,37 @@ document.getElementById('productList').addEventListener('click', function(event)
         console.log("Clicked element is not a product card."); 
     }
 });
+
+async function fetchSlides() {
+    const carouselInner = document.getElementById('carouselInner');
+    carouselInner.innerHTML = ''; // Clear existing content
+
+    try {
+        const querySnapshot = await db.collection('promotion').get();
+        let isFirstSlide = true;
+
+        querySnapshot.forEach((doc) => {
+            const slide = doc.data();
+            const slideItem = document.createElement('div');
+            slideItem.classList.add('carousel-item');
+            if (isFirstSlide) {
+                slideItem.classList.add('active');
+                isFirstSlide = false;
+            }
+
+            const slideImage = document.createElement('img');
+            slideImage.src = slide.slideImage;
+            slideImage.classList.add('d-block', 'w-100');
+            slideImage.alt = 'Slide Image';
+
+            slideItem.appendChild(slideImage);
+            carouselInner.appendChild(slideItem);
+        });
+    } catch (error) {
+        console.error('Error fetching slides: ', error);
+        alert('Failed to fetch slides. Please try again later.');
+    }
+}
+
+// Call the function to fetch and display slides when the page loads
+document.addEventListener('DOMContentLoaded', fetchSlides);

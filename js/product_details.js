@@ -21,6 +21,7 @@ const productImageElement = document.getElementById('productImage');
 const productPriceElement = document.getElementById('productPrice');
 const productStockElement = document.getElementById('productStock');
 const productDetailsElement = document.getElementById('productDetails');
+const quantityInput = document.getElementById('quantity');
 
 // Function to fetch product details from Firestore
 async function fetchProductDetails(productId) {
@@ -42,13 +43,11 @@ async function fetchProductDetails(productId) {
     }
 }
 
-
 // Call the function to fetch and display product details
 fetchProductDetails(productId);
 
 // Function to handle quantity increase
 document.getElementById('increaseQuantity').addEventListener('click', function() {
-    const quantityInput = document.getElementById('quantity');
     let quantity = parseInt(quantityInput.value);
     quantity = isNaN(quantity) ? 0 : quantity;
     quantityInput.value = quantity + 1;
@@ -56,7 +55,6 @@ document.getElementById('increaseQuantity').addEventListener('click', function()
 
 // Function to handle quantity decrease
 document.getElementById('decreaseQuantity').addEventListener('click', function() {
-    const quantityInput = document.getElementById('quantity');
     let quantity = parseInt(quantityInput.value);
     quantity = isNaN(quantity) ? 0 : quantity;
     if (quantity > 1) {
@@ -65,8 +63,35 @@ document.getElementById('decreaseQuantity').addEventListener('click', function()
 });
 
 // Function to add product to cart
-document.getElementById('addToCart').addEventListener('click', function() {
-    const productId = window.location.hash.substring(1);
-    const quantity = parseInt(document.getElementById('quantity').value);
-    console.log("Add to Cart - Product ID:", productId, "Quantity:", quantity);
+document.getElementById('addToCart').addEventListener('click', async function() {
+    try {
+        const quantity = parseInt(quantityInput.value);
+        const productData = (await db.collection('products').doc(productId).get()).data();
+
+        // Retrieve product information
+        const productName = productData.itemName;
+        const productPrice = parseFloat(productData.itemPrice);
+        const productStock = parseInt(productData.itemStock);
+        const productImageURL = productData.itemImageURL;
+
+        // Get the current user's ID
+        const userId = firebase.auth().currentUser.uid;
+
+        // Save product information to Firestore collection 'cart'
+        await db.collection('cart').add({
+            userId: userId,
+            productId: productId,
+            productName: productName,
+            productPrice: productPrice,
+            productStock: productStock,
+            productQuantity: quantity,
+            productImageURL: productImageURL
+        });
+
+        console.log('Product added to cart');
+        alert('Product added to cart!');
+    } catch (error) {
+        console.error('Error adding product to cart:', error);
+        alert('Failed to add product to cart. Please try again later.');
+    }
 });
