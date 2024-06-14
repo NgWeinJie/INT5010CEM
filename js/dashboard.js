@@ -195,5 +195,8 @@ function searchProduct() {
     });
 }
 
+// Event listener for search input
+document.getElementById('searchInput').addEventListener('input', searchProduct);
+
 // Initial fetch of products
 fetchProducts();
