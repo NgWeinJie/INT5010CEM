@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p class="card-text"><strong>Address:</strong> ${order.userAddress}, ${order.userCity}, ${order.userState}, ${order.userPostcode}</p>
                             <p class="card-text"><strong>Remark:</strong> ${order.userRemark}</p>
                             <p class="card-text"><strong>Date:</strong> ${order.timestamp.toDate().toLocaleString()}</p>
+                            <p class="card-text"><strong>Status:</strong> <span class="text-success font-weight-bold">${order.status}</span></p>
                             <p class="card-text"><strong>Tracking Number:</strong> ${order.trackingNumber}</p>
                             <h6 class="mt-3"><strong>Cart Items:</strong></h6>
                             <div id="cart-items-${doc.id}" class="cart-items-container table-responsive">

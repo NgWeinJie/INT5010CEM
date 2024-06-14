@@ -91,12 +91,18 @@ function createProductCard(product, productId) {
     const card = document.createElement('div');
     card.classList.add('card');
     card.style.height = '480px';
+    card.style.backgroundColor = '#ebf8ff';
+    card.style.borderRadius = '8px';
+    card.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)'; 
+    card.style.transition = 'transform 0.2s';
 
     const img = document.createElement('img');
     img.src = product.itemImageURL;
     img.classList.add('card-img-top');
     img.alt = product.itemName;
     img.style.height = '250px';
+    img.style.borderRadius = '8px 8px 0 0'; // Match card corners
+    img.style.backgroundColor = '#ebf8ff';
 
     const cardBody = document.createElement('div');
     cardBody.classList.add('card-body');
@@ -118,7 +124,7 @@ function createProductCard(product, productId) {
     addToCartButton.textContent = 'Add to Cart';
 
     // Add click event listener to "Add to Cart" button
-    addToCartButton.addEventListener('click', function(event) {
+    addToCartButton.addEventListener('click', async function(event) {
         event.stopPropagation(); // Stop the event from propagating further
         console.log('Item added to cart:', product.itemName);
 
@@ -131,23 +137,39 @@ function createProductCard(product, productId) {
         // Get the current user's ID
         const userId = firebase.auth().currentUser.uid;
 
-        // Save product information to Firestore collection 'cart'
-        db.collection('cart').add({
-            userId: userId,
-            productName: productName,
-            productPrice: productPrice,
-            productStock: productStock,
-            productQuantity: 1,
-            productImageURL: productImageURL
-        })
-        .then(function(docRef) {
+        try {
+            // Save product information to Firestore collection 'cart'
+            const docRef = await db.collection('cart').add({
+                userId: userId,
+                productName: productName,
+                productPrice: productPrice,
+                productStock: productStock,
+                productQuantity: 1,
+                productImageURL: productImageURL
+            });
+
             console.log('Product added to cart:', docRef.id);
             alert('Product added to cart!');
-        })
-        .catch(function(error) {
+
+            // Animate add to cart
+            const cartIcon = document.getElementById('cartIcon');
+            const productCardClone = productCard.cloneNode(true);
+            productCardClone.style.position = 'absolute';
+            productCardClone.style.left = productCard.getBoundingClientRect().left + 'px';
+            productCardClone.style.top = productCard.getBoundingClientRect().top + 'px';
+            document.body.appendChild(productCardClone);
+            setTimeout(() => {
+                productCardClone.style.transition = 'transform 0.5s ease-out, opacity 0.5s ease-out';
+                productCardClone.style.transform = 'translate(' + (cartIcon.getBoundingClientRect().left - productCard.getBoundingClientRect().left) + 'px, ' + (cartIcon.getBoundingClientRect().top - productCard.getBoundingClientRect().top) + 'px) scale(0.1)';
+                productCardClone.style.opacity = '0';
+            }, 50);
+            setTimeout(() => {
+                productCardClone.remove();
+            }, 500);
+        } catch (error) {
             console.error('Error adding product to cart:', error);
             alert('Failed to add product to cart. Please try again later.');
-        });
+        }
     });
 
     cardBody.appendChild(title);
@@ -162,6 +184,7 @@ function createProductCard(product, productId) {
 
     return productCard;
 }
+
 
 
 // Add event listener to dropdown items

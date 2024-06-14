@@ -35,6 +35,15 @@ function fetchAndDisplayCustomers() {
                     <td>${doc.id}</td>
                     <td>${customer.timestamp.toDate().toLocaleString()}</td>
                     <td>
+                        <select class="form-control" onchange="updateOrderStatus('${doc.id}', this.value)">
+                            <option value="Preparing" ${customer.status === 'Order Received' ? 'selected' : ''}>Order Received</option>
+                            <option value="Preparing" ${customer.status === 'Preparing' ? 'selected' : ''}>Preparing</option>
+                            <option value="Shipped" ${customer.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                            <option value="Out for Delivery" ${customer.status === 'Out for Delivery' ? 'selected' : ''}>Out for Delivery</option>
+                            <option value="Delivered" ${customer.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                        </select>
+                    </td>
+                    <td>
                         <button class="btn btn-primary btn-sm" onclick="viewCustomerHistory('${doc.id}')">View</button>
                         <button class="btn btn-danger btn-sm" onclick="deleteOrder('${doc.id}')">Delete</button>
                     </td>
@@ -46,6 +55,19 @@ function fetchAndDisplayCustomers() {
         .catch(error => {
             console.error("Error fetching registered customers: ", error);
         });
+}
+
+// Function to update order status
+function updateOrderStatus(orderId, newStatus) {
+    db.collection('orders').doc(orderId).update({
+        status: newStatus
+    }).then(() => {
+        console.log("Order status successfully updated!");
+        alert("Order status successfully updated.");
+    }).catch(error => {
+        console.error("Error updating order status: ", error);
+        alert("Failed to update order status. Please try again later.");
+    });
 }
 
 // Function to delete an order
@@ -157,13 +179,3 @@ function viewCustomerHistory(docId) {
 
 // Fetch and display customers when the document is ready
 document.addEventListener('DOMContentLoaded', fetchAndDisplayCustomers);
-
-
-
-
-
-
-
-
-
-

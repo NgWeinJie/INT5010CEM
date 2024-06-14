@@ -217,6 +217,7 @@ async function saveOrder(currentUser, promoCode) {
         cartItems,
         totalAmount: parseFloat(document.getElementById('totalAmount').textContent.split('RM ')[1].trim()),
         shippingFee: 10.00, // Fixed shipping fee
+        status: "Order Received",
         trackingNumber,
         promoCode: promoCode || '',
         discount: discount || 0, 
