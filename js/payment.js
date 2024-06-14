@@ -27,6 +27,7 @@ function getUrlParameter(name) {
 // Display promo discount if available
 const promoDiscountElement = document.getElementById('promoDiscount');
 const discount = parseFloat(getUrlParameter('discount'));
+const promoCode = getUrlParameter('promoCode');
 if (discount > 0) {
     promoDiscountElement.textContent = `Promo Discount: RM ${discount.toFixed(2)}`;
 }
@@ -140,8 +141,42 @@ async function deleteCartItems(currentUser) {
     }
 }
 
+// Function to generate a tracking number
+function generateTrackingNumber() {
+    const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let trackingNumber = '';
+    for (let i = 0; i < 10; i++) {
+        const randomIndex = Math.floor(Math.random() * charset.length);
+        trackingNumber += charset[randomIndex];
+    }
+    return trackingNumber;
+}
+
+// Function to update product stock in Firestore
+async function updateProductStock(cartItems) {
+    const updatePromises = cartItems.map(async item => {
+        const productDocRef = db.collection('products').where('itemName', '==', item.productName).limit(1);
+        const productSnapshot = await productDocRef.get();
+        if (!productSnapshot.empty) {
+            const productDoc = productSnapshot.docs[0];
+            const productData = productDoc.data();
+            const newStock = productData.itemStock - item.productQuantity;
+            return productDoc.ref.update({ itemStock: newStock });
+        } else {
+            console.log(`No product found with name: ${item.productName}`);
+        }
+    });
+    try {
+        await Promise.all(updatePromises);
+        console.log('Product stock updated successfully');
+    } catch (error) {
+        console.error('Error updating product stock:', error);
+        throw new Error('Failed to update product stock. Please try again later.');
+    }
+}
+
 // Function to save order details to Firestore
-function saveOrder(currentUser) {
+async function saveOrder(currentUser, promoCode) {
     if (!currentUser) {
         alert('Please log in to proceed with payment.');
         return;
@@ -166,28 +201,10 @@ function saveOrder(currentUser) {
         cartItems.push({ productName, productPrice, productQuantity });
     });
 
-    // Calculate total amount
-    let totalAmount = 0;
-    cartItems.forEach(item => {
-        totalAmount += item.productPrice * item.productQuantity;
-    });
+    // Generate tracking number
+    const trackingNumber = generateTrackingNumber();
 
-    // Define the shipping fee
-    const shippingFee = 10.00;
-
-    // Get promo discount from URL parameters
-    const promoDiscount = parseFloat(getUrlParameter('discount')) || 0;
-
-    // Apply promo discount and add shipping fee to the total amount
-    totalAmount = totalAmount + shippingFee - promoDiscount;
-
-    // Ensure totalAmount has only two decimal places
-    totalAmount = parseFloat(totalAmount.toFixed(2));
-
-    // Get current timestamp
-    const timestamp = firebase.firestore.Timestamp.now();
-
-    // Construct the order object
+    // Create order object
     const order = {
         userId: currentUser.uid,
         userName,
@@ -198,57 +215,55 @@ function saveOrder(currentUser) {
         userState,
         userRemark,
         cartItems,
-        totalAmount,
-        timestamp
+        totalAmount: parseFloat(document.getElementById('totalAmount').textContent.split('RM ')[1].trim()),
+        shippingFee: 10.00, // Fixed shipping fee
+        trackingNumber,
+        promoCode: promoCode || '',
+        discount: discount || 0, 
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
     };
 
-    // Save the order to Firestore
-    db.collection('orders').add(order)
-        .then(() => {
-            console.log('Order saved successfully!');
-            alert('Order has been saved');
-            // Redirect to home page after saving the order
-            window.location.href = 'home.html';
-        })
-        .catch(error => {
-            console.error('Error saving order:', error);
-            alert('Failed to save order. Please try again later.');
-        });
+    try {
+        // Save order to Firestore
+        await db.collection('orders').add(order);
+
+        // Update product stock
+        await updateProductStock(cartItems);
+
+        // Delete cart items
+        await deleteCartItems(currentUser);
+
+        // Alert payment successful with tracking number
+        alert(`Payment successful. Your tracking number is: ${trackingNumber}`);
+
+        // Redirect to order confirmation page
+        window.location.href = 'home.html';
+    } catch (error) {
+        console.error('Error saving order:', error);
+        alert('Failed to place order. Please try again later.');
+    }
 }
 
-// Add event listener to the back button and done button
-document.addEventListener('DOMContentLoaded', function() {
-    const backToCartBtn = document.getElementById('backToCartBtn');
-    backToCartBtn.addEventListener('click', navigateBackToCart);
-
-    const doneBtn = document.getElementById('doneBtn');
-    doneBtn.addEventListener('click', function() {
-        const user = firebase.auth().currentUser;
+// Event listeners for buttons
+document.getElementById('backToCartBtn').addEventListener('click', navigateBackToCart);
+document.getElementById('doneBtn').addEventListener('click', () => {
+    firebase.auth().onAuthStateChanged(user => {
         if (user) {
-            saveOrder(user);
-            deleteCartItems(user);
+            const promoCode = getUrlParameter('promoCode'); // Get promo code from URL
+            saveOrder(user, promoCode); // Pass promo code to saveOrder function
         } else {
             alert('Please log in to proceed with payment.');
         }
     });
 });
 
-// Listen for changes in user authentication state
+// Fetch cart items and user details on page load
 firebase.auth().onAuthStateChanged(user => {
     if (user) {
         fetchCartItems(user);
-        fetchUserDetails(user.uid);  // Fetch and display user details
+        fetchUserDetails(user.uid);
     } else {
         alert('Please log in to proceed with payment.');
+        window.location.href = 'login.html';
     }
 });
-
-// Call the function to fetch and display cart items when the page loads
-document.addEventListener('DOMContentLoaded', () => {
-    const user = firebase.auth().currentUser;
-    if (user) {
-        fetchCartItems(user);
-        fetchUserDetails(user.uid);
-    }
-});
-

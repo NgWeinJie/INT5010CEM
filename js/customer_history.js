@@ -101,6 +101,7 @@ const fetchOrderHistory = (docId) => {
                     <p class="card-text"><strong>Address:</strong> ${order.userAddress}, ${order.userCity}, ${order.userState}, ${order.userPostcode}</p>
                     <p class="card-text"><strong>Remark:</strong> ${order.userRemark}</p>
                     <p class="card-text"><strong>Date:</strong> ${order.timestamp.toDate().toLocaleString()}</p>
+                    <p class="card-text"><strong>Tracking Number:</strong> ${order.trackingNumber}</p>
                     <h6 class="mt-3"><strong>Cart Items:</strong></h6>
                     <div id="cart-items-${doc.id}" class="cart-items-container table-responsive">
                         <table class="table">
@@ -116,6 +117,9 @@ const fetchOrderHistory = (docId) => {
                             <tbody>
                             </tbody>
                         </table>
+                        <p class="card-text text-right"><strong>Promo Code:</strong> ${order.promoCode}</p>
+                        <p class="card-text text-right"><strong>Shipping Fee:</strong> RM ${order.shippingFee}</p>
+                        <p class="card-text text-right"><strong>Discount:</strong> -RM ${order.discount}</p>
                         <p class="card-text text-right"><strong>Total Amount:</strong> RM ${order.totalAmount.toFixed(2)}</p>
                     </div>
                 </div>

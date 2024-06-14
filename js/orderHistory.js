@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyDCdP64LQYeS4vu3lFH7XtUHOPVJOYCbO8",
         authDomain: "enterprise-project-3448b.firebaseapp.com",
@@ -11,28 +10,28 @@ document.addEventListener('DOMContentLoaded', () => {
         measurementId: "G-3S19G51X7T"
     };
     firebase.initializeApp(firebaseConfig);
-
-    // Initialize Firestore
     const db = firebase.firestore();
 
-    // Function to fetch product image URL by item name
-    const fetchProductImage = (itemName) => {
+    const fetchProductData = (itemName) => {
         return db.collection('products').where('itemName', '==', itemName).get()
             .then(querySnapshot => {
                 if (!querySnapshot.empty) {
                     const productDoc = querySnapshot.docs[0];
-                    return productDoc.data().itemImageURL;
+                    return {
+                        id: productDoc.id,
+                        ...productDoc.data()
+                    };
                 } else {
-                    return 'https://via.placeholder.com/50';  // Fallback image URL if product not found
+                    console.error(`No product found with name: ${itemName}`);
+                    return null;
                 }
             })
             .catch(error => {
-                console.error('Error fetching product image:', error);
-                return 'https://via.placeholder.com/50';  // Fallback image URL in case of error
+                console.error('Error fetching product data:', error);
+                return null;
             });
     };
 
-    // Function to fetch and display order history
     const fetchOrderHistory = (userId) => {
         db.collection('orders').where('userId', '==', userId).orderBy('timestamp', 'desc').get()
             .then(querySnapshot => {
@@ -51,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p class="card-text"><strong>Address:</strong> ${order.userAddress}, ${order.userCity}, ${order.userState}, ${order.userPostcode}</p>
                             <p class="card-text"><strong>Remark:</strong> ${order.userRemark}</p>
                             <p class="card-text"><strong>Date:</strong> ${order.timestamp.toDate().toLocaleString()}</p>
+                            <p class="card-text"><strong>Tracking Number:</strong> ${order.trackingNumber}</p>
                             <h6 class="mt-3"><strong>Cart Items:</strong></h6>
                             <div id="cart-items-${doc.id}" class="cart-items-container table-responsive">
                                 <table class="table">
@@ -66,8 +66,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <tbody>
                                     </tbody>
                                 </table>
+                                <p class="card-text text-right"><strong>Promo Code:</strong> ${order.promoCode}</p>
+                                <p class="card-text text-right"><strong>Shipping Fee:</strong> RM ${order.shippingFee}</p>
+                                <p class="card-text text-right"><strong>Discount:</strong> -RM ${order.discount}</p>
                                 <p class="card-text text-right"><strong>Total Amount:</strong> RM ${order.totalAmount.toFixed(2)}</p>
-
+                                <button class="btn btn-primary reorder-all-button" data-order-id="${doc.id}">Reorder All Items</button>
                             </div>
                         </div>
                     `;
@@ -75,8 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     const cartItemsTableBody = document.querySelector(`#cart-items-${doc.id} tbody`);
                     order.cartItems.forEach(async (item) => {
-                        const productImageUrl = await fetchProductImage(item.productName);
+                        const productData = await fetchProductData(item.productName);
                         const cartItemRow = document.createElement('tr');
+                        const productImageUrl = productData ? productData.itemImageURL : 'https://via.placeholder.com/50';
                         cartItemRow.innerHTML = `
                             <td><img src="${productImageUrl}" alt="${item.productName}" class="product-image img-fluid"></td>
                             <td>${item.productName}</td>
@@ -85,6 +89,22 @@ document.addEventListener('DOMContentLoaded', () => {
                             <td>RM ${(item.productPrice * item.productQuantity).toFixed(2)}</td>
                         `;
                         cartItemsTableBody.appendChild(cartItemRow);
+                    });
+                    
+                    const reorderButton = orderCard.querySelector('.reorder-all-button');
+                    reorderButton.addEventListener('click', async (event) => {
+                        const orderId = event.target.getAttribute('data-order-id');
+                        const orderDoc = await db.collection('orders').doc(orderId).get();
+                        const orderData = orderDoc.data();
+
+                        for (let item of orderData.cartItems) {
+                            addToCart({
+                                userId,
+                                productName: item.productName,
+                                productPrice: item.productPrice,
+                                productQuantity: item.productQuantity
+                            });
+                        }
                     });
                 });
             })
@@ -99,13 +119,57 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     };
 
-    // Listen for changes in user authentication state
+    function addToCart(cartItem) {
+        const {
+            userId,
+            productName,
+            productPrice,
+            productQuantity
+        } = cartItem;
+    
+    
+        // Retrieve product data from the products collection
+        db.collection('products').where('itemName', '==', productName).get()
+            .then(querySnapshot => {
+                if (!querySnapshot.empty) {
+                    const productData = querySnapshot.docs[0].data();
+                    const { itemStock, itemImageURL } = productData;
+    
+                    // Save cart item to the cart collection
+                    db.collection('cart').add({
+                        userId,
+                        productName,
+                        productPrice,
+                        productQuantity,
+                        productStock: itemStock,
+                        productImageURL: itemImageURL
+                    })
+                    .then(() => {
+                        console.log('Item added to cart successfully');
+                        alert('Item reordered successfully!');
+                    })
+                    .catch((error) => {
+                        console.error('Error adding item to cart: ', error);
+                        alert('Failed to reorder item. Please try again later.');
+                    });
+                } else {
+                    console.error(`No product found with name: ${productName}`);
+                    alert('Failed to reorder item. Product not found.');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching product data:', error);
+                alert('Failed to reorder item. Please try again later.');
+            });
+    }
+    
+
     firebase.auth().onAuthStateChanged(user => {
         if (user) {
             fetchOrderHistory(user.uid);
         } else {
             alert('Please log in to view your order history.');
-            window.location.href = 'login.html';  // Redirect to login page if not logged in
+            window.location.href = 'login.html';
         }
     });
 });

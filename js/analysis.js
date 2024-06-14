@@ -24,27 +24,31 @@ function fetchProductDataAndRenderChart() {
 
         snapshot.forEach(doc => {
             const order = doc.data();
-            // Assuming the timestamp field in your order document is named "timestamp"
-            const orderTimestamp = order.timestamp;
-            const orderDate = orderTimestamp.toDate();
-            const monthYear = `${orderDate.getMonth() + 1}/${orderDate.getFullYear()}`;
+            const orderTimestamp = order.timestamp || order.orderDate; // Use orderDate if timestamp is not present
 
-            order.cartItems.forEach(item => {
-                // Count product quantities
-                if (productCounts[item.productName]) {
-                    productCounts[item.productName] += item.productQuantity;
-                } else {
-                    productCounts[item.productName] = item.productQuantity;
-                }
+            if (orderTimestamp) {
+                const orderDate = orderTimestamp.toDate();
+                const monthYear = `${orderDate.getMonth() + 1}/${orderDate.getFullYear()}`;
 
-                // Calculate monthly revenue
-                const itemRevenue = item.productPrice * item.productQuantity;
-                if (monthlyRevenue[monthYear]) {
-                    monthlyRevenue[monthYear] += itemRevenue;
-                } else {
-                    monthlyRevenue[monthYear] = itemRevenue;
-                }
-            });
+                order.cartItems.forEach(item => {
+                    // Count product quantities
+                    if (productCounts[item.productName]) {
+                        productCounts[item.productName] += item.productQuantity;
+                    } else {
+                        productCounts[item.productName] = item.productQuantity;
+                    }
+
+                    // Calculate monthly revenue
+                    const itemRevenue = item.productPrice * item.productQuantity;
+                    if (monthlyRevenue[monthYear]) {
+                        monthlyRevenue[monthYear] += itemRevenue;
+                    } else {
+                        monthlyRevenue[monthYear] = itemRevenue;
+                    }
+                });
+            } else {
+                console.warn(`Order ${doc.id} is missing a timestamp.`);
+            }
         });
 
         const productNames = Object.keys(productCounts);
@@ -110,14 +114,3 @@ function renderMonthlyRevenue(monthlyRevenue) {
 
 // Fetch and display product data when the document is ready
 document.addEventListener('DOMContentLoaded', fetchProductDataAndRenderChart);
-
-
-
-
-
-
-
-
-
-
-

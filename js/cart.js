@@ -193,28 +193,25 @@ function fetchCartItems(currentUser) {
                 const proceedToPaymentBtn = document.getElementById('proceedToPaymentBtn');
                 proceedToPaymentBtn.addEventListener('click', function() {
                     const promoCode = document.getElementById('promoCode').value;
-                    // Check if promo code is valid
-                    if (promoCode === 'tdy1200') {
-                        // Apply discount of RM5.00
-                        const discount = 5.00;
-                        // Get the total price
-                        const totalPriceElement = document.getElementById('totalPrice');
-                        const totalPrice = parseFloat(totalPriceElement.textContent.replace('RM ', ''));
-                        // Calculate new total after discount
-                        const newTotal = totalPrice - discount;
-                        // Redirect to payment page and pass discount
-                        window.location.href = `payment.html?discount=${discount}&total=${newTotal}`;
+                    const currentDate = new Date();
+                    const totalPriceElement = document.getElementById('totalPrice');
+                    const totalPrice = parseFloat(totalPriceElement.textContent.replace('RM ', ''));
+
+                    if (promoCodes[promoCode] && currentDate >= promoCodes[promoCode].startDate && currentDate <= promoCodes[promoCode].endDate) {
+                        const { discount, minPurchase } = promoCodes[promoCode];
+                        if (totalPrice >= minPurchase) {
+                            const newTotal = totalPrice - discount;
+                            alert(`Promo code applied successfully! You have received a discount of RM ${discount}. Your new total is RM ${newTotal.toFixed(2)}.`);
+                            window.location.href = `payment.html?discount=${discount}&total=${newTotal.toFixed(2)}&promoCode=${promoCode}`;
+                        } else {
+                            alert(`The minimum purchase amount for this promo code is RM ${minPurchase}.`);
+                        }
                     } else {
-                        // Redirect to payment page without discount
-                        window.location.href = 'payment.html';
+                        alert('Invalid or expired promo code.');
                     }
                 });
             })
-            .catch((error) => {
-                console.error('Error fetching cart items:', error);
-                alert('Failed to fetch cart items. Please try again later.');
-            });
-    } 
+} 
 
 // Function to update the quantity of a cart item in Firestore
 function updateCartItemQuantity(cartItemId, newQuantity) {
@@ -229,22 +226,10 @@ function updateCartItemQuantity(cartItemId, newQuantity) {
     });
 }
 
-
-// Listen for changes in user authentication state
-firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
-        // User is signed in
-        fetchCartItems(user);
-    } else {
-        // User is signed out
-        alert('Please log in to view your cart.');
-    }
-});
-
 // Function to update total price
 function updateTotalPrice() {
     // Reset total price
-    totalPrice = 0;
+    let totalPrice = 0;
 
     // Get all rows in the table body
     const rows = tableBody.querySelectorAll('tr');
@@ -273,13 +258,46 @@ function renumberProducts() {
     });
 }
 
-// Function to save cart items to the "payment" collection
-function saveCartToPayment(currentUser) {
-    // Navigate to the payment page directly without saving to Firestore
-    window.location.href = 'payment.html';
+// Function to fetch promo codes from Firestore
+function fetchPromoCodes() {
+    return db.collection('promotion').get()
+        .then((querySnapshot) => {
+            const promoCodes = {};
+            querySnapshot.forEach((doc) => {
+                const promo = doc.data();
+                promoCodes[promo.code] = {
+                    discount: promo.discount,
+                    minPurchase: promo.minPurchase,
+                    startDate: promo.startDate.toDate(),
+                    endDate: promo.endDate.toDate()
+                };
+            });
+            return promoCodes;
+        })
+        .catch((error) => {
+            console.error('Error fetching promo codes: ', error);
+            return {};
+        });
 }
 
+// Fetch promo codes when the page loads
+let promoCodes = {};
+document.addEventListener('DOMContentLoaded', () => {
+    fetchPromoCodes().then((codes) => {
+        promoCodes = codes;
+    });
+});
 
 // Call the function to fetch and display cart items when the page loads
-document.addEventListener('DOMContentLoaded', fetchCartItems);
-
+document.addEventListener('DOMContentLoaded', function() {
+    // Listen for changes in user authentication state
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+            // User is signed in
+            fetchCartItems(user);
+        } else {
+            // User is signed out
+            alert('Please log in to view your cart.');
+        }
+    });
+});

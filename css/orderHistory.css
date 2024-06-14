@@ -70,3 +70,8 @@
 .text-right {
     text-align: right !important;
 }
+
+.reorder-all-button {
+    width: 100%;
+    background-color: rgb(14, 164, 14);
+}

@@ -97,3 +97,30 @@ footer {
     margin-left: 5px; /* Adjust the spacing between text and link */
 }
 
+#slideCarousel {
+    display: inline-block; /* Ensure the container's width adjusts dynamically */
+}
+
+.carousel-inner {
+    text-align: center; /* Center the carousel images horizontally */
+}
+
+.carousel-item img {
+    width: 800px !important; /* Adjust width as needed */
+    height: auto !important; /* Maintain aspect ratio */
+    margin: 0 auto; /* Center the image horizontally */
+    display: inline-block; /* Ensure images are displayed inline */
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 100px; /* Allow the controls to adjust width */
+}
+
+/* Adjust the container's width to match the slide */
+#slideCarousel {
+    width: auto; /* Reset width */
+    max-width: 800px; /* Set maximum width to prevent overflow */
+    margin: 0 auto; /* Center the container horizontally */
+}
+
