@@ -7,23 +7,23 @@ const firebaseConfig = {
     messagingSenderId: "1042464271522",
     appId: "1:1042464271522:web:1d1a3ffadf6830b5767bfb",
     measurementId: "G-3S19G51X7T"
-};
+  };
 
 // Initialize Firebase app
 firebase.initializeApp(firebaseConfig);
 
 function validation() {
     // Get the input field values
-    const email = document.getElementById('user_email').value.trim();
-    const password = document.getElementById('user_password').value.trim();
+    const email = document.getElementById('admin_email').value.trim();
+    const password = document.getElementById('admin_password').value.trim();
 
     // Regular expression for email validation
     const isEmailValid = (email) => email.includes('@') && email.includes('.');
 
     // Error messages
     const errorMessages = {
-        user_email: 'Email must be valid.',
-        user_password: 'Password must not be empty.'
+        admin_email: 'Email must be valid.',
+        admin_password: 'Password must not be empty.'
     };
 
     // Function to validate each field
@@ -42,17 +42,17 @@ function validation() {
     }
 
     // Check each field for validation
-    const isValidEmail = validateField('user_email', isEmailValid, errorMessages.user_email);
-    const isValidPassword = validateField('user_password', (password) => !!password, errorMessages.user_password); // Validation for non-empty password
+    const isValidEmail = validateField('admin_email', isEmailValid, errorMessages.admin_email);
+    const isValidPassword = validateField('admin_password', (password) => !!password, errorMessages.admin_password); // Validation for non-empty password
 
     // Log error status and return true if all fields pass validation, otherwise false
     const isValidForm = isValidEmail && isValidPassword;
     return isValidForm;
 }
 
-function loginUser() {
-    const email = document.getElementById('user_email').value;
-    const password = document.getElementById('user_password').value;
+function adminLogin() {
+    const email = document.getElementById('admin_email').value;
+    const password = document.getElementById('admin_password').value;
 
     // Basic validation for email and password before making the API call
     if (!email || !password) {
@@ -63,13 +63,8 @@ function loginUser() {
     firebase.auth().signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
             const user = userCredential.user;
-            // Check if the user's email is verified
-            if (user.emailVerified) {
-                // Redirect to home or home page after successful login
-                window.location.href = 'home.html';
-            } else {
-                alert('Please verify your email before logging in.');
-            }
+            // Redirect to admin panel or dashboard after successful login
+            window.location.href = 'dashboard.html';
         })
         .catch((error) => {
             console.error('Login error:', error); // Log the detailed error for debugging
@@ -99,27 +94,27 @@ function handleLoginError(error) {
 }
 
 // Get the Login button element
-const loginBtn = document.getElementById('loginBtn');
+const adminLoginBtn = document.getElementById('adminLoginBtn');
 
 // Attach an event listener to the Login button
-loginBtn.addEventListener('click', function(event) {
+adminLoginBtn.addEventListener('click', function(event) {
     // Prevent the default form submission behavior
     event.preventDefault();
 
     // Trigger validation for each field
     if (validation()) {
-        // If validation passes, proceed with user login
-        loginUser();
+        // If validation passes, proceed with admin login
+        adminLogin();
     } else {
         // If validation fails, add Bootstrap's was-validated class to the form
-        const form = document.getElementById('loginForm');
+        const form = document.getElementById('adminLoginForm');
         form.classList.add('was-validated');
     }
 });
 
 // Toggle password visibility
 const togglePasswordBtn = document.getElementById('togglePassword');
-const passwordField = document.getElementById('user_password');
+const passwordField = document.getElementById('admin_password');
 
 togglePasswordBtn.addEventListener('click', function() {
     const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';

@@ -67,9 +67,10 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <tbody>
                                     </tbody>
                                 </table>
-                                <p class="card-text text-right"><strong>Promo Code:</strong> ${order.promoCode}</p>
+                                ${order.promoCode ? `<p class="card-text text-right"><strong>Promo Code:</strong> ${order.promoCode}</p>` : ''}
+                                ${order.discount ? `<p class="card-text text-right"><strong>Promo Code Discount:</strong> -RM ${order.discount}</p>` : ''}
+                                ${order.coinsDiscount ? `<p class="card-text text-right"><strong>Redeem Coins Discount:</strong> -RM ${order.coinsDiscount.toFixed(2)}</p>` : ''}
                                 <p class="card-text text-right"><strong>Shipping Fee:</strong> RM ${order.shippingFee}</p>
-                                <p class="card-text text-right"><strong>Discount:</strong> -RM ${order.discount}</p>
                                 <p class="card-text text-right"><strong>Total Amount:</strong> RM ${order.totalAmount.toFixed(2)}</p>
                                 <button class="btn btn-primary reorder-all-button" data-order-id="${doc.id}">Reorder All Items</button>
                             </div>
@@ -91,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         `;
                         cartItemsTableBody.appendChild(cartItemRow);
                     });
-                    
+
                     const reorderButton = orderCard.querySelector('.reorder-all-button');
                     reorderButton.addEventListener('click', async (event) => {
                         const orderId = event.target.getAttribute('data-order-id');
@@ -127,15 +128,14 @@ document.addEventListener('DOMContentLoaded', () => {
             productPrice,
             productQuantity
         } = cartItem;
-    
-    
+
         // Retrieve product data from the products collection
         db.collection('products').where('itemName', '==', productName).get()
             .then(querySnapshot => {
                 if (!querySnapshot.empty) {
                     const productData = querySnapshot.docs[0].data();
                     const { itemStock, itemImageURL } = productData;
-    
+
                     // Save cart item to the cart collection
                     db.collection('cart').add({
                         userId,
@@ -163,7 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Failed to reorder item. Please try again later.');
             });
     }
-    
 
     firebase.auth().onAuthStateChanged(user => {
         if (user) {

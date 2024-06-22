@@ -16,39 +16,57 @@ firebase.initializeApp(firebaseConfig);
 // Get a reference to Firestore database
 const db = firebase.firestore();
 
-// Function to fetch and display registered customers sorted by date and time
+// Function to fetch and display registered customers sorted by status and date/time
 function fetchAndDisplayCustomers() {
     const customersTableBody = document.getElementById('customersTableBody');
     // Clear the existing rows
     customersTableBody.innerHTML = '';
 
     db.collection('orders')
-        .orderBy('timestamp', 'asc') // Sort orders by timestamp in ascending order
         .get()
         .then(snapshot => {
+            const orders = [];
             snapshot.forEach(doc => {
-                const customer = doc.data();
-                const row = document.createElement('tr');
+                const order = doc.data();
+                order.id = doc.id; // Store the document ID in the order object
+                if (order.timestamp && order.timestamp.toDate) {
+                    orders.push(order);
+                } else {
+                    console.warn(`Order ${doc.id} does not have a valid timestamp`);
+                }
+            });
 
+            // Sort orders by status and date/time
+            orders.sort((a, b) => {
+                const statusOrder = ['Order Received', 'Preparing', 'Shipped', 'Out for Delivery', 'Delivered'];
+                const statusComparison = statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
+                if (statusComparison !== 0) {
+                    return statusComparison;
+                }
+                return a.timestamp.toDate() - b.timestamp.toDate();
+            });
+
+            // Display sorted orders
+            orders.forEach(order => {
+                const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${customer.userName}</td>
-                    <td>${doc.id}</td>
-                    <td>${customer.timestamp.toDate().toLocaleString()}</td>
+                    <td>${order.userName}</td>
+                    <td>${order.id}</td>
+                    <td>${order.timestamp.toDate().toLocaleString()}</td>
                     <td>
-                        <select class="form-control" onchange="updateOrderStatus('${doc.id}', this.value)">
-                            <option value="Preparing" ${customer.status === 'Order Received' ? 'selected' : ''}>Order Received</option>
-                            <option value="Preparing" ${customer.status === 'Preparing' ? 'selected' : ''}>Preparing</option>
-                            <option value="Shipped" ${customer.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
-                            <option value="Out for Delivery" ${customer.status === 'Out for Delivery' ? 'selected' : ''}>Out for Delivery</option>
-                            <option value="Delivered" ${customer.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                        <select class="form-control" onchange="updateOrderStatus('${order.id}', this.value)">
+                            <option value="Order Received" ${order.status === 'Order Received' ? 'selected' : ''}>Order Received</option>
+                            <option value="Preparing" ${order.status === 'Preparing' ? 'selected' : ''}>Preparing</option>
+                            <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                            <option value="Out for Delivery" ${order.status === 'Out for Delivery' ? 'selected' : ''}>Out for Delivery</option>
+                            <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
                         </select>
                     </td>
                     <td>
-                        <button class="btn btn-primary btn-sm" onclick="viewCustomerHistory('${doc.id}')">View</button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteOrder('${doc.id}')">Delete</button>
+                        <button class="btn btn-primary btn-sm" onclick="viewCustomerHistory('${order.id}')">View</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteOrder('${order.id}')">Delete</button>
                     </td>
                 `;
-
                 customersTableBody.appendChild(row);
             });
         })
@@ -57,6 +75,7 @@ function fetchAndDisplayCustomers() {
         });
 }
 
+
 // Function to update order status
 function updateOrderStatus(orderId, newStatus) {
     db.collection('orders').doc(orderId).update({
@@ -64,6 +83,10 @@ function updateOrderStatus(orderId, newStatus) {
     }).then(() => {
         console.log("Order status successfully updated!");
         alert("Order status successfully updated.");
+        // Adding a slight delay before refreshing the page
+        setTimeout(() => {
+            location.reload();
+        }, 100);
     }).catch(error => {
         console.error("Error updating order status: ", error);
         alert("Failed to update order status. Please try again later.");
@@ -113,9 +136,12 @@ const fetchOrderHistory = (docId) => {
             const orderHistoryContainer = document.getElementById('orderHistory');
             orderHistoryContainer.innerHTML = '';
 
+            // Create the order card with conditional fields
             const orderCard = document.createElement('div');
             orderCard.classList.add('card', 'order-card');
-            orderCard.innerHTML = `
+
+            // Order card HTML
+            let orderCardHTML = `
                 <div class="card-body">
                     <h5 class="card-title">Order ID: ${doc.id}</h5>
                     <p class="card-text"><strong>Name:</strong> ${order.userName}</p>
@@ -136,18 +162,40 @@ const fetchOrderHistory = (docId) => {
                                     <th>Total</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                            </tbody>
+                            <tbody></tbody>
                         </table>
-                        <p class="card-text text-right"><strong>Promo Code:</strong> ${order.promoCode}</p>
-                        <p class="card-text text-right"><strong>Shipping Fee:</strong> RM ${order.shippingFee}</p>
-                        <p class="card-text text-right"><strong>Discount:</strong> -RM ${order.discount}</p>
-                        <p class="card-text text-right"><strong>Total Amount:</strong> RM ${order.totalAmount.toFixed(2)}</p>
                     </div>
                 </div>
             `;
+
+            // Add Promo Code if available
+            if (order.promoCode) {
+                orderCardHTML += `<p class="card-text text-right"><strong>Promo Code:</strong> ${order.promoCode}</p>`;
+            }
+
+            // Add Promo Code Discount if greater than 0
+            if (order.discount > 0) {
+                orderCardHTML += `<p class="card-text text-right"><strong>Promo Code Discount:</strong> -RM ${order.discount.toFixed(2)}</p>`;
+            }
+
+            // Add Redeem Coins Discount if greater than 0
+            if (order.coinsDiscount > 0) {
+                orderCardHTML += `<p class="card-text text-right"><strong>Redeem Coins Discount:</strong> -RM ${order.coinsDiscount.toFixed(2)}</p>`;
+            }
+
+            // Add Shipping Fee and Total Amount
+            orderCardHTML += `
+                <p class="card-text text-right"><strong>Shipping Fee:</strong> RM ${order.shippingFee}</p>
+                <p class="card-text text-right"><strong>Total Amount:</strong> RM ${order.totalAmount.toFixed(2)}</p>
+            `;
+
+            // Set the inner HTML of the order card
+            orderCard.innerHTML = orderCardHTML;
+
+            // Append the order card to the container
             orderHistoryContainer.appendChild(orderCard);
 
+            // Fetch and display cart items
             const cartItemsTableBody = document.querySelector(`#cart-items-${doc.id} tbody`);
             order.cartItems.forEach(async (item) => {
                 const productImageUrl = await fetchProductImage(item.productName);
@@ -167,6 +215,7 @@ const fetchOrderHistory = (docId) => {
             alert('Failed to fetch order history. Please try again later.');
         });
 };
+
 
 // Function to view customer history using doc.id
 function viewCustomerHistory(docId) {
