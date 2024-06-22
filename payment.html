@@ -48,6 +48,9 @@
                 <a class="nav-link" href="profile.html">Profile</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="coins_rewards.html">Coins Rewards</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="contact_us.html">Contact Us</a>
             </li>
         </ul>
@@ -105,8 +108,19 @@
             <div class="col-md-8">
                 <h1>Payment</h1>
                 <div id="paymentItems" class="mt-3"></div>
+                <div id="coinsSection">
+                    <p>Redeem Dry Foodies Coins: <span id="userCoins">0</span>
+                        <i class="fas fa-coins gold"></i> <!-- Font Awesome coin icon -->
+                        <label class="switch">
+                            <input type="checkbox" id="redeemCoinsSwitch" onchange="updateTotalAmount()">
+                            <span class="slider round"></span>
+                        </label>
+                    </p>
+                </div>
+                  
                 <h5 id="promoDiscount" class="mt-3"></h5>
-                <h5 id="shippingFee" class="mt-3"></h5>
+                <h5 id="coinsDiscount" class="mt-3"></h5>
+                <h5 id="shippingFee" class="mt-3"></h5>         
                 <h3 id="totalAmount" class="mt-3"></h3>
                 <button id="backToCartBtn" class="btn btn-secondary mt-3">Back to Cart</button>
                 <button id="doneBtn" class="btn btn-success mt-3 ml-3">Done</button> 

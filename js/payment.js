@@ -40,6 +40,8 @@ const fetchUserDetails = (userId) => {
             const userData = doc.data();
             // Display user data in the user details form
             displayUserDetails(userData);
+            // Fetch and display user coins
+            displayUserCoins(userData.points);
         } else {
             console.log('No such document!');
         }
@@ -57,6 +59,11 @@ const displayUserDetails = (userData) => {
     document.getElementById('userPostcode').value = userData.postcode;
     document.getElementById('userCity').value = userData.city;
     document.getElementById('userState').value = userData.state;
+};
+
+// Function to display user coins
+const displayUserCoins = (points) => {
+    document.getElementById('userCoins').textContent = points;
 };
 
 // Function to fetch cart items instead of payment items
@@ -100,12 +107,39 @@ function fetchCartItems(currentUser) {
             // Add the shipping fee to the total amount and display it
             const finalAmount = totalAmount + shippingFee;
             document.getElementById('totalAmount').textContent = `Total Amount: RM ${finalAmount.toFixed(2)}`;
+
+            // Store the original total amount in a data attribute for later reference
+            document.getElementById('totalAmount').dataset.originalTotalAmount = finalAmount;
         })
         .catch(error => {
             console.error('Error fetching cart items:', error);
             alert('Failed to fetch cart items. Please try again later.');
         });
 }
+
+// Function to update the total amount based on redeem coins switch
+function updateTotalAmount() {
+    const totalAmountElement = document.getElementById('totalAmount');
+    const redeemCoinsSwitch = document.getElementById('redeemCoinsSwitch');
+    const userCoins = parseInt(document.getElementById('userCoins').textContent);
+    const originalTotalAmount = parseFloat(totalAmountElement.dataset.originalTotalAmount);
+
+    let totalAmount = originalTotalAmount;
+    let coinsDiscount = 0; // Initialize coins discount
+
+    if (redeemCoinsSwitch.checked) {
+        coinsDiscount = userCoins * 0.01; // Calculate coins discount (assuming 1% per coin)
+        totalAmount -= coinsDiscount; // Deduct coins discount from total amount
+    }
+
+    totalAmountElement.textContent = `Total Amount: RM ${totalAmount.toFixed(2)}`;
+
+    // Display or hide Coins Discount based on redeemCoinsSwitch
+    const coinsDiscountElement = document.getElementById('coinsDiscount');
+    coinsDiscountElement.textContent = redeemCoinsSwitch.checked ? `Coins Discount: RM ${coinsDiscount.toFixed(2)}` : '';
+}
+
+
 
 // Function to handle back button click event
 function navigateBackToCart() {
@@ -175,7 +209,7 @@ async function updateProductStock(cartItems) {
     }
 }
 
-// Function to save order details to Firestore
+// Function to save order details to Firestore and update user points
 async function saveOrder(currentUser, promoCode) {
     if (!currentUser) {
         alert('Please log in to proceed with payment.');
@@ -204,6 +238,12 @@ async function saveOrder(currentUser, promoCode) {
     // Generate tracking number
     const trackingNumber = generateTrackingNumber();
 
+    // Calculate total amount
+    const totalAmount = parseFloat(document.getElementById('totalAmount').textContent.split('RM ')[1].trim());
+
+    // Calculate points (1 point for each RM spent)
+    const pointsEarned = Math.floor(totalAmount);
+
     // Create order object
     const order = {
         userId: currentUser.uid,
@@ -215,18 +255,26 @@ async function saveOrder(currentUser, promoCode) {
         userState,
         userRemark,
         cartItems,
-        totalAmount: parseFloat(document.getElementById('totalAmount').textContent.split('RM ')[1].trim()),
+        totalAmount,
         shippingFee: 10.00, // Fixed shipping fee
         status: "Order Received",
         trackingNumber,
         promoCode: promoCode || '',
-        discount: discount || 0, 
+        discount: discount || 0,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
     };
 
+    // Add coinsDiscount to order if redeemCoinsSwitch is checked
+    const redeemCoinsSwitch = document.getElementById('redeemCoinsSwitch');
+    if (redeemCoinsSwitch.checked) {
+        const userCoins = parseInt(document.getElementById('userCoins').textContent);
+        const coinsDiscount = userCoins * 0.01; // Calculate coins discount (assuming 1% per coin)
+        order.coinsDiscount = coinsDiscount;
+    }
+
     try {
         // Save order to Firestore
-        await db.collection('orders').add(order);
+        const orderRef = await db.collection('orders').add(order);
 
         // Update product stock
         await updateProductStock(cartItems);
@@ -234,10 +282,32 @@ async function saveOrder(currentUser, promoCode) {
         // Delete cart items
         await deleteCartItems(currentUser);
 
-        // Alert payment successful with tracking number
-        alert(`Payment successful. Your tracking number is: ${trackingNumber}`);
+        // Update user points
+        const userDocRef = db.collection('users').doc(currentUser.uid);
+        const userDoc = await userDocRef.get();
+        if (userDoc.exists) {
+            const userData = userDoc.data();
+            let userPoints = userData.points || 0;
 
-        // Redirect to order confirmation page
+            // Check if redeem coins switch is checked
+            if (redeemCoinsSwitch.checked) {
+                const redeemedPoints = userPoints; // User can redeem all their points
+                userPoints -= redeemedPoints;
+            }
+
+            // Add earned points
+            userPoints += pointsEarned;
+
+            // Update user points in Firestore
+            await userDocRef.update({
+                points: userPoints
+            });
+
+            // Alert payment successful with tracking number and points earned
+            alert(`Payment successful. Your tracking number is: ${trackingNumber}. You earned ${pointsEarned} points.`);
+        }
+
+        // Redirect to order home page
         window.location.href = 'home.html';
     } catch (error) {
         console.error('Error saving order:', error);
@@ -245,26 +315,22 @@ async function saveOrder(currentUser, promoCode) {
     }
 }
 
-// Event listeners for buttons
-document.getElementById('backToCartBtn').addEventListener('click', navigateBackToCart);
-document.getElementById('doneBtn').addEventListener('click', () => {
-    firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-            const promoCode = getUrlParameter('promoCode'); // Get promo code from URL
-            saveOrder(user, promoCode); // Pass promo code to saveOrder function
-        } else {
-            alert('Please log in to proceed with payment.');
-        }
-    });
-});
 
-// Fetch cart items and user details on page load
-firebase.auth().onAuthStateChanged(user => {
-    if (user) {
-        fetchCartItems(user);
-        fetchUserDetails(user.uid);
+// Initialize Firebase authentication state observer
+firebase.auth().onAuthStateChanged(currentUser => {
+    if (currentUser) {
+        fetchCartItems(currentUser);
+        fetchUserDetails(currentUser.uid);
     } else {
-        alert('Please log in to proceed with payment.');
+        // Redirect to login page if not authenticated
         window.location.href = 'login.html';
     }
 });
+
+// Event listeners
+document.getElementById('redeemCoinsSwitch').addEventListener('change', updateTotalAmount);
+document.getElementById('doneBtn').addEventListener('click', () => {
+    const promoCode = getUrlParameter('promoCode');
+    saveOrder(firebase.auth().currentUser, promoCode);
+});
+document.getElementById('backToCartBtn').addEventListener('click', navigateBackToCart);

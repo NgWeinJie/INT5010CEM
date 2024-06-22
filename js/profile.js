@@ -23,6 +23,8 @@ const fetchUserData = (userId) => {
             displayUserData(userData);
             // Display user data in the edit profile modal form
             displayUserDetailsInForm(userData);
+            // Display coins balance
+            displayCoinsBalance(userData.points || 0); 
         } else {
             console.log('No such document!');
         }
@@ -51,8 +53,12 @@ const displayUserData = (userData) => {
     const userPostcodeElement = document.getElementById('userPostcode');
     const userCityElement = document.getElementById('userCity');
     const userStateElement = document.getElementById('userState');
+    const coinsBalanceElement = document.getElementById('coinsBalance');
 
-    if (userNameElement && userEmailElement && userAddressElement && userPhoneElement && userPostcodeElement && userCityElement && userStateElement ) {
+    if (userNameElement && userEmailElement && userAddressElement &&
+        userPhoneElement && userPostcodeElement && userCityElement &&
+        userStateElement && coinsBalanceElement) {
+        
         userNameElement.textContent = `${userData.firstName} ${userData.lastName}`;
         userEmailElement.textContent = userData.email;
         userAddressElement.textContent = userData.address;
@@ -60,6 +66,7 @@ const displayUserData = (userData) => {
         userPostcodeElement.textContent = userData.postcode;
         userCityElement.textContent = userData.city;
         userStateElement.textContent = userData.state;
+        coinsBalanceElement.textContent = `${userData.points || 0}`;
     }
 };
 
@@ -99,7 +106,6 @@ document.getElementById('editProfileFormModal').addEventListener('submit', (even
     // Update the user profile with the new data
     updateUserProfile(userId, newData);
 });
-
 
 // Check if user is authenticated and fetch user data
 firebase.auth().onAuthStateChanged((user) => {
