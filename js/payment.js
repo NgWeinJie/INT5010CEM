@@ -1,4 +1,3 @@
-// Assuming you already have Firebase initialized and user authenticated
 const firebaseConfig = {
     apiKey: "AIzaSyDCdP64LQYeS4vu3lFH7XtUHOPVJOYCbO8",
     authDomain: "enterprise-project-3448b.firebaseapp.com",
@@ -41,13 +40,15 @@ const fetchUserDetails = (userId) => {
             // Display user data in the user details form
             displayUserDetails(userData);
             // Fetch and display user coins
-            displayUserCoins(userData.points);
+            displayUserCoins(userData.points || 0);
         } else {
             console.log('No such document!');
+            displayUserCoins(0); // Handle first-time purchase scenario
         }
     })
     .catch((error) => {
         console.error('Error getting user data:', error);
+        displayUserCoins(0); // Handle errors gracefully
     });
 };
 
@@ -64,6 +65,14 @@ const displayUserDetails = (userData) => {
 // Function to display user coins
 const displayUserCoins = (points) => {
     document.getElementById('userCoins').textContent = points;
+    const redeemCoinsSwitch = document.getElementById('redeemCoinsSwitch');
+    
+    if (points === 0) {
+        redeemCoinsSwitch.checked = false;
+        redeemCoinsSwitch.disabled = true;
+    } else {
+        redeemCoinsSwitch.disabled = false;
+    }
 };
 
 // Function to fetch cart items instead of payment items
@@ -124,6 +133,12 @@ function updateTotalAmount() {
     const userCoins = parseInt(document.getElementById('userCoins').textContent);
     const originalTotalAmount = parseFloat(totalAmountElement.dataset.originalTotalAmount);
 
+    if (redeemCoinsSwitch.checked && userCoins === 0) {
+        alert('0 coins balance. You cannot redeem Dry Foodies Coins.');
+        redeemCoinsSwitch.checked = false; // Uncheck the switch
+        return;
+    }
+
     let totalAmount = originalTotalAmount;
     let coinsDiscount = 0; // Initialize coins discount
 
@@ -138,8 +153,6 @@ function updateTotalAmount() {
     const coinsDiscountElement = document.getElementById('coinsDiscount');
     coinsDiscountElement.textContent = redeemCoinsSwitch.checked ? `Coins Discount: RM ${coinsDiscount.toFixed(2)}` : '';
 }
-
-
 
 // Function to handle back button click event
 function navigateBackToCart() {
@@ -314,7 +327,6 @@ async function saveOrder(currentUser, promoCode) {
         alert('Failed to place order. Please try again later.');
     }
 }
-
 
 // Initialize Firebase authentication state observer
 firebase.auth().onAuthStateChanged(currentUser => {

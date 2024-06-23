@@ -33,7 +33,7 @@ const fetchUserData = (userId) => {
 
 // Function to render vouchers
 const renderVouchers = () => {
-    db.collection('vouchers').get().then((querySnapshot) => {
+    db.collection('vouchers').where('stocks', '!=', '0').get().then((querySnapshot) => {
         const voucherContainer = document.getElementById('voucherContainer');
         voucherContainer.innerHTML = '';
         querySnapshot.forEach((doc) => {

@@ -56,6 +56,7 @@ async function fetchAndDisplayProductsByCategory() {
             // Query Firestore for products in the current category
             const querySnapshot = await db.collection('products')
                 .where('itemCategories', '==', category)
+                .where('itemStock', '!=', '0')
                 .get();
 
             // Check if any products were found for the category
@@ -305,6 +306,26 @@ async function fetchSlides() {
         alert('Failed to fetch slides. Please try again later.');
     }
 }
+
+// When the user scrolls down 20px from the top of the document, show the button
+window.onscroll = function() { scrollFunction() };
+
+function scrollFunction() {
+    const backToTopBtn = document.getElementById("backToTopBtn");
+    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+        backToTopBtn.style.display = "block";
+    } else {
+        backToTopBtn.style.display = "none";
+    }
+}
+
+// When the user clicks on the button, scroll to the top of the document
+document.getElementById('backToTopBtn').addEventListener('click', function() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth' // Smooth scroll to top
+    });
+});
 
 // Call the function to fetch and display slides when the page loads
 document.addEventListener('DOMContentLoaded', fetchSlides);
