@@ -23,7 +23,7 @@ function fetchProducts() {
     productList.innerHTML = ''; // Clear existing content
 
     // Fetch products collection from Firestore
-    db.collection('products').get()
+    db.collection('products').orderBy('itemStock', 'asc').get()
         .then(snapshot => {
             snapshot.forEach(doc => {
                 const product = doc.data();
@@ -134,6 +134,7 @@ function openEditModal(productId) {
                                     .then(() => {
                                         $('#editProductModal').modal('hide');
                                         fetchProducts();
+                                        window.alert('Product edit successfully!');
                                     })
                                     .catch(error => {
                                         console.error('Error updating product:', error);
@@ -148,6 +149,7 @@ function openEditModal(productId) {
                             .then(() => {
                                 $('#editProductModal').modal('hide');
                                 fetchProducts();
+                                window.alert('Product edit successfully!');
                             })
                             .catch(error => {
                                 console.error('Error updating product:', error);
@@ -171,8 +173,8 @@ function deleteProduct(productId) {
     if (confirm('Are you sure you want to delete this product?')) {
         db.collection('products').doc(productId).delete()
             .then(() => {
-                console.log('Product successfully deleted!');
                 fetchProducts();
+                window.alert('Product successfully deleted!');
             })
             .catch(error => {
                 console.error('Error removing product:', error);
